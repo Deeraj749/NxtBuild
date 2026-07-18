@@ -7,6 +7,7 @@ import CodeEditor from '../components/CodeEditor.jsx';
 import LivePreview from '../components/LivePreview.jsx';
 import { getProject, updateProject } from '../services/projectService.js';
 import { generateCode } from '../services/generationService.js';
+import JSZip from 'jszip';
 import '../styles/builder.css';
 
 const EXAMPLE_PROMPTS = [
@@ -95,16 +96,79 @@ function BuilderPage() {
     }
   };
 
-  const handleDownload = () => {
+  const handleDownload = async () => {
     if (!code) return;
-    const blob = new Blob([code], { type: 'text/html' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `${project && project.title ? project.title : 'my-app'}.html`;
-    link.click();
-    URL.revokeObjectURL(url);
-    showToast('Code downloaded!', 'success');
+    
+    try {
+      const zip = new JSZip();
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(code, 'text/html');
+      
+      // Extract inline CSS styles
+      const styleTags = doc.querySelectorAll('style');
+      let cssContent = '';
+      styleTags.forEach(tag => {
+        cssContent += tag.textContent + '\n';
+        tag.remove();
+      });
+      
+      // Extract inline JS scripts
+      const scriptTags = doc.querySelectorAll('script');
+      let jsContent = '';
+      scriptTags.forEach(tag => {
+        if (!tag.src) {
+          jsContent += tag.textContent + '\n';
+          tag.remove();
+        }
+      });
+      
+      // Link style.css
+      if (cssContent.trim()) {
+        const link = doc.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = 'style.css';
+        doc.head.appendChild(link);
+      }
+      
+      // Link script.js
+      if (jsContent.trim()) {
+        const script = doc.createElement('script');
+        script.src = 'script.js';
+        doc.body.appendChild(script);
+      }
+      
+      // Generate clean index.html
+      const htmlContent = '<!DOCTYPE html>\n' + doc.documentElement.outerHTML;
+      
+      // Project name for file naming
+      const projectName = project && project.title ? project.title.toLowerCase().replace(/[^a-z0-9]+/g, '-') : 'my-app';
+      
+      // Add files to zip
+      zip.file('index.html', htmlContent);
+      
+      if (cssContent.trim()) {
+        zip.file('style.css', cssContent);
+      }
+      
+      if (jsContent.trim()) {
+        zip.file('script.js', jsContent);
+      }
+      
+      // Add README.md
+      zip.file('README.md', `# ${project && project.title ? project.title : 'My AI Web App'}\n\nGenerated with NxtBuild App Builder.\n\n## Project Structure\n- \`index.html\`: The main page HTML structure\n${cssContent.trim() ? '- `style.css`: External stylesheet containing design styles\n' : ''}${jsContent.trim() ? '- `script.js`: External JavaScript containing script functionality\n' : ''}\n## How to Run\nSimply open \`index.html\` in any web browser.`);
+
+      const content = await zip.generateAsync({ type: 'blob' });
+      const url = URL.createObjectURL(content);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${projectName}.zip`;
+      link.click();
+      URL.revokeObjectURL(url);
+      showToast('Zip downloaded successfully!', 'success');
+    } catch (err) {
+      console.error(err);
+      showToast('Failed to generate zip file.', 'error');
+    }
   };
 
   if (pageLoading) {

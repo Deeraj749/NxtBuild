@@ -9,6 +9,8 @@ NxtBuild is a premium, full-stack AI-powered web application builder built with 
 
 ## ✨ Features
 
+- 🎨 **Starter Template Gallery:** Browse and select from 7 professional pre-built layout structures (Blank Canvas, Portfolio, Product Landing Page, Minimalist Blog, E-Commerce, Local Business, Link-In-Bio Mobile Hub) before coding.
+- 👁️ **Template Inspector Modal:** Experience live rendering inside a responsive sandbox preview iframe, or examine and copy source code with single-click functionality before project initialization.
 - 💬 **Conversational AI Generator:** Chat with Google Gemini AI to describe your web application's requirements, features, and style.
 - 💻 **Real-Time Code Sandbox:** Instantly compile and preview generated HTML, CSS, and JS components inside an interactive live sandbox.
 - 📝 **Inline Source Code Editor:** Directly modify, refine, or refactor the generated source code with instant preview updates.
@@ -175,7 +177,7 @@ All root paths are registered behind `/api` prefix (e.g. `http://localhost:5000/
 | HTTP Method | Route | Description | Auth Required? | Request Body / Params |
 | :--- | :--- | :--- | :--- | :--- |
 | **GET** | `/` | Retrieves all projects owned by the user | Yes (JWT) | *None* |
-| **POST** | `/` | Creates a new blank project | Yes (JWT) | `{ "title" }` |
+| **POST** | `/` | Creates a new project (blank or cloned from a starter template) | Yes (JWT) | `{ "title", "generatedCode", "messages" }` (optional template parameters) |
 | **GET** | `/:id` | Fetches details and versions of a specific project | Yes (JWT) | `id` (URL parameter) |
 | **PUT** | `/:id` | Updates project source code or title manually | Yes (JWT) | `{ "title", "generatedCode" }` |
 | **DELETE** | `/:id` | Deletes a project from database persistently | Yes (JWT) | `id` (URL parameter) |

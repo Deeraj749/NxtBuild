@@ -15,12 +15,12 @@ export const getProjectById = async (projectId, userId) => {
   return project;
 };
 
-export const createProject = async (userId, title) => {
+export const createProject = async (userId, title, generatedCode, messages) => {
   const project = await Project.create({
     userId,
     title: title || 'Untitled Project',
-    messages: [],
-    generatedCode: '',
+    messages: messages || [],
+    generatedCode: generatedCode || '',
     versions: [],
   });
   return project;

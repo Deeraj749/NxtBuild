@@ -11,8 +11,8 @@ export const getProjects = async (req, res, next) => {
 
 export const createProject = async (req, res, next) => {
   try {
-    const { title } = req.body;
-    const project = await projectService.createProject(req.user._id, title);
+    const { title, generatedCode, messages } = req.body;
+    const project = await projectService.createProject(req.user._id, title, generatedCode, messages);
     return res.status(201).json({ success: true, data: project });
   } catch (error) {
     next(error);

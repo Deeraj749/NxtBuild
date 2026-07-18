@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { ToastContext } from '../context/ToastContext.jsx';
 import ProjectCard from '../components/ProjectCard.jsx';
 import { getProjects, createProject, deleteProject } from '../services/projectService.js';
+import TemplateGalleryModal from '../components/TemplateGalleryModal.jsx';
+import TemplatePreviewModal from '../components/TemplatePreviewModal.jsx';
 import '../styles/dashboard.css';
 
 function DashboardPage() {
@@ -11,6 +13,9 @@ function DashboardPage() {
 
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isGalleryOpen, setIsGalleryOpen] = useState(false);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [selectedPreviewTemplate, setSelectedPreviewTemplate] = useState(null);
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -26,13 +31,34 @@ function DashboardPage() {
     fetchProjects();
   }, []);
 
-  const handleNewProject = async () => {
+  const handleNewProjectClick = () => {
+    setIsGalleryOpen(true);
+  };
+
+  const handleUseTemplate = async (title, generatedCode, messages) => {
     try {
-      const project = await createProject();
+      setIsGalleryOpen(false);
+      setIsPreviewOpen(false);
+      setLoading(true);
+      const project = await createProject(title, generatedCode, messages);
       navigate(`/builder/${project._id}`);
+      showToast('Project created successfully!', 'success');
     } catch (err) {
-      showToast('Failed to create project.', 'error');
+      setLoading(false);
+      showToast('Failed to create project from template.', 'error');
     }
+  };
+
+  const handlePreviewTemplate = (template) => {
+    setIsGalleryOpen(false);
+    setSelectedPreviewTemplate(template);
+    setIsPreviewOpen(true);
+  };
+
+  const handleClosePreview = () => {
+    setIsPreviewOpen(false);
+    setSelectedPreviewTemplate(null);
+    setIsGalleryOpen(true);
   };
 
   const handleOpen = (id) => {
@@ -67,7 +93,7 @@ function DashboardPage() {
             {projects.length} project{projects.length !== 1 ? 's' : ''}
           </p>
         </div>
-        <button className="dashboard-new-btn" onClick={handleNewProject}>
+        <button className="dashboard-new-btn" onClick={handleNewProjectClick}>
           + New Project
         </button>
       </div>
@@ -77,7 +103,7 @@ function DashboardPage() {
           <p className="dashboard-empty-icon">&#9830;</p>
           <h2 className="dashboard-empty-title">No projects yet</h2>
           <p className="dashboard-empty-subtitle">Create your first project and start building with AI.</p>
-          <button className="dashboard-new-btn" onClick={handleNewProject}>
+          <button className="dashboard-new-btn" onClick={handleNewProjectClick}>
             + Create First Project
           </button>
         </div>
@@ -93,6 +119,20 @@ function DashboardPage() {
           ))}
         </div>
       )}
+
+      <TemplateGalleryModal
+        isOpen={isGalleryOpen}
+        onClose={() => setIsGalleryOpen(false)}
+        onUseTemplate={handleUseTemplate}
+        onPreviewTemplate={handlePreviewTemplate}
+      />
+
+      <TemplatePreviewModal
+        isOpen={isPreviewOpen}
+        template={selectedPreviewTemplate}
+        onClose={handleClosePreview}
+        onUseTemplate={handleUseTemplate}
+      />
     </div>
   );
 }

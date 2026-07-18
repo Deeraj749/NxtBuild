@@ -10,8 +10,8 @@ const getProject = async (id) => {
   return response.data.data;
 };
 
-const createProject = async (title) => {
-  const response = await api.post('/projects', { title });
+const createProject = async (title, generatedCode = '', messages = []) => {
+  const response = await api.post('/projects', { title, generatedCode, messages });
   return response.data.data;
 };
 

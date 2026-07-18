@@ -56,11 +56,13 @@
   border: 1px solid #e8e7f0;
   border-radius: 14px;
   overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .project-card:hover {
+  transform: translateY(-4px);
   border-color: #6366f1;
-  box-shadow: 0 8px 24px rgba(99, 102, 241, 0.08);
+  box-shadow: 0 12px 30px rgba(99, 102, 241, 0.12);
 }
 
 .project-card-preview {
@@ -78,6 +80,13 @@
   position: absolute;
   top: 0;
   left: 0;
+  transform: scale(0.5);
+  transform-origin: top left;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.project-card:hover .project-card-iframe {
+  transform: scale(0.53);
 }
 
 .project-card-empty-preview {
@@ -124,10 +133,12 @@
   border-radius: 8px;
   background: #6366f1;
   color: #ffffff;
+  transition: all 0.2s ease;
 }
 
 .project-card-open:hover {
-  background: #5558e6;
+  background: #4f46e5;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
 }
 
 .project-card-delete {
@@ -138,11 +149,13 @@
   border-radius: 8px;
   background: #ffffff;
   color: #dc2626;
+  transition: all 0.2s ease;
 }
 
 .project-card-delete:hover {
   background: #fef2f2;
-  border-color: #dc2626;
+  border-color: #f87171;
+  color: #b91c1c;
 }
 
 /* Empty state */

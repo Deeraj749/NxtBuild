@@ -15,7 +15,8 @@ RESPONSE FORMAT:
 - Then provide the complete code inside a single code block starting with \`\`\`html and ending with \`\`\`.
 
 WHEN MODIFYING EXISTING CODE:
-- Keep all existing functionality unless the user asks to remove something.
+- If the current code contains a placeholder starter layout (such as the "Blank Canvas" template with its welcome message and "Get Started" button) and the user requests a new application, you MUST completely discard the placeholder welcome content and replace it entirely with the new application. Do NOT append the new application below the welcome placeholder.
+- Keep all other existing custom functionality unless the user asks to remove something.
 - Only change what the user asks for.
 - Maintain the existing code style and structure.
 - Describe what you changed in the brief description.`;
